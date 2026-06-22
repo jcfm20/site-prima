@@ -17,6 +17,7 @@
             --text-main: #ffffff;
             --text-secondary: #c7c7c7;
             --text-muted: #8e8e8e;
+            --error-color: #ff6b6b;
         }
 
         * {
@@ -40,7 +41,7 @@
         .wrapper {
             width: 100%;
             max-width: 600px;
-            padding-bottom: 120px;
+            padding-bottom: 140px;
         }
 
         header {
@@ -196,6 +197,21 @@
         .form-group input:focus {
             outline: none;
             border-color: var(--accent-color);
+        }
+
+        /* Mensagem de Erro Bonita na Tela */
+        .error-message {
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-top: 20px;
+            display: none;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
         .total-bar {
@@ -449,6 +465,8 @@
                 <label for="booking-time">Horário Desejado:</label>
                 <input type="time" id="booking-time" required>
             </div>
+
+            <div class="error-message" id="ui-error-box"></div>
         </div>
 
         <footer>
@@ -468,7 +486,7 @@
     </div>
 
     <script>
-        // Bloqueia a seleção de datas passadas no calendário nativo
+        // Bloqueia a seleção visual de datas passadas no calendário
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('booking-date').setAttribute('min', today);
@@ -495,43 +513,71 @@
             document.getElementById('display-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
 
-        // Validação profunda de data para o calendário real (Bissexto e dias dos meses)
-        function isValidCalendarDate(dateString) {
-            if (!dateString) return false;
+        // Validação profunda lógica de calendário real (Bissexto, dias, meses e passado)
+        function checkDateValidity(dateString) {
+            if (!dateString) return "data invalida";
             
             const parts = dateString.split('-');
             const year = parseInt(parts[0], 10);
             const month = parseInt(parts[1], 10);
             const day = parseInt(parts[2], 10);
 
-            // Regra dos anos bissextos
+            // Validação de data no passado
+            const inputDate = new Date(year, month - 1, day);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (inputDate < today) {
+                return "data invalida";
+            }
+
+            // Regra de quantidade real de dias por mês (bissexto incluso)
             const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
             const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
             if (day < 1 || day > daysInMonths[month - 1]) {
-                return false;
+                return "data invalida";
             }
-            return true;
+            return "valid";
+        }
+
+        function displayUIError(msg) {
+            const errorBox = document.getElementById('ui-error-box');
+            errorBox.innerText = msg;
+            errorBox.style.display = 'block';
+            errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function clearUIError() {
+            document.getElementById('ui-error-box').style.display = 'none';
         }
 
         function sendWhatsApp() {
+            clearUIError();
+
             const name = document.getElementById('client-name').value.trim();
             const date = document.getElementById('booking-date').value;
             const time = document.getElementById('booking-time').value;
             
-            // 1. Validação de campos obrigatórios vazios
-            if (!name || !date || !time) {
-                alert("Por favor, preencha todos os campos obrigatórios (Nome, Data e Horário) antes de enviar.");
+            // 1. Validação do Nome
+            if (!name) {
+                displayUIError("Por favor, informe seu nome.");
                 return;
             }
 
-            // 2. Validação lógica do calendário real
-            if (!isValidCalendarDate(date)) {
-                alert("A data inserida é inválida para o mês selecionado. Verifique o dia e tente novamente.");
+            // 2. Validação Exclusiva da Data (Passado e Dias Reais do Mês)
+            const dateCheck = checkDateValidity(date);
+            if (dateCheck === "data invalida") {
+                displayUIError("data invalida");
                 return;
             }
 
-            // 3. Validação de serviços selecionados
+            // 3. Validação de Horário
+            if (!time) {
+                displayUIError("Por favor, selecione um horário válido.");
+                return;
+            }
+
+            // 4. Validação de Serviços Selecionados
             const checkboxes = document.querySelectorAll('.service-checkbox');
             let selectedServices = [];
             let total = 0;
@@ -544,11 +590,11 @@
             });
 
             if (selectedServices.length === 0) {
-                alert("Por favor, selecione ao menos um procedimento da nossa lista.");
+                displayUIError("Por favor, selecione pelo menos um serviço da lista.");
                 return;
             }
 
-            // Formatação da data para o padrão nacional
+            // Formatação final e envio para o WhatsApp
             const parts = date.split('-');
             const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
 
