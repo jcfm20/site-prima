@@ -199,7 +199,7 @@
             border-color: var(--accent-color);
         }
 
-        /* Mensagem de Erro Bonita na Tela */
+        /* Mensagem de Erro na Tela */
         .error-message {
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid var(--error-color);
@@ -455,15 +455,15 @@
             <h3>Seus Dados (Obrigatórios)</h3>
             <div class="form-group">
                 <label for="client-name">Seu Nome Completo:</label>
-                <input type="text" id="client-name" placeholder="Ex: Maria Silva" required>
+                <input type="text" id="client-name" placeholder="Ex: Maria Silva">
             </div>
             <div class="form-group">
                 <label for="booking-date">Data Desejada:</label>
-                <input type="date" id="booking-date" required>
+                <input type="date" id="booking-date">
             </div>
             <div class="form-group">
                 <label for="booking-time">Horário Desejado:</label>
-                <input type="time" id="booking-time" required>
+                <input type="time" id="booking-time">
             </div>
 
             <div class="error-message" id="ui-error-box"></div>
@@ -513,9 +513,9 @@
             document.getElementById('display-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
 
-        // Validação profunda lógica de calendário real (Bissexto, dias, meses e passado)
+        // Validação profunda lógica de calendário real
         function checkDateValidity(dateString) {
-            if (!dateString) return "data invalida";
+            if (!dateString) return "empty";
             
             const parts = dateString.split('-');
             const year = parseInt(parts[0], 10);
@@ -530,7 +530,7 @@
                 return "data invalida";
             }
 
-            // Regra de quantidade real de dias por mês (bissexto incluso)
+            // Quantidade real de dias por mês (bissexto incluso)
             const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
             const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
@@ -558,26 +558,29 @@
             const date = document.getElementById('booking-date').value;
             const time = document.getElementById('booking-time').value;
             
-            // 1. Validação do Nome
+            // 1. Verificação de Nome Vazio
             if (!name) {
-                displayUIError("Por favor, informe seu nome.");
+                displayUIError("Por favor, preencha o seu nome completo.");
                 return;
             }
 
-            // 2. Validação Exclusiva da Data (Passado e Dias Reais do Mês)
+            // 2. Verificação Exclusiva da Data
             const dateCheck = checkDateValidity(date);
-            if (dateCheck === "data invalida") {
+            if (dateCheck === "empty") {
+                displayUIError("Por favor, selecione uma data.");
+                return;
+            } else if (dateCheck === "data invalida") {
                 displayUIError("data invalida");
                 return;
             }
 
-            // 3. Validação de Horário
+            // 3. Verificação de Horário Vazio
             if (!time) {
-                displayUIError("Por favor, selecione um horário válido.");
+                displayUIError("Por favor, escolha o horário desejado.");
                 return;
             }
 
-            // 4. Validação de Serviços Selecionados
+            // 4. Verificação de Serviços Selecionados
             const checkboxes = document.querySelectorAll('.service-checkbox');
             let selectedServices = [];
             let total = 0;
@@ -594,7 +597,7 @@
                 return;
             }
 
-            // Formatação final e envio para o WhatsApp
+            // Formatação final e redirecionamento para o WhatsApp
             const parts = date.split('-');
             const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
 
