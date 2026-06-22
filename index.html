@@ -90,13 +90,14 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px;
             margin-bottom: 16px;
             display: flex;
             gap: 15px;
             cursor: pointer;
             transition: all 0.3s ease;
             position: relative;
+            align-items: center;
         }
 
         .service-card:hover {
@@ -116,6 +117,16 @@
             cursor: pointer;
         }
 
+        /* Estilização para as Fotos dos Serviços */
+        .service-thumb {
+            width: 85px;
+            height: 85px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #141414;
+        }
+
         .service-info {
             flex: 1;
         }
@@ -124,7 +135,7 @@
             display: flex;
             justify-content: space-between;
             align-items: baseline;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .service-name {
@@ -141,19 +152,19 @@
         }
 
         .service-description {
-            font-size: 0.88rem;
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            line-height: 1.5;
+            line-height: 1.4;
             font-weight: 300;
         }
 
         .service-meta {
             display: flex;
-            gap: 20px;
-            margin-top: 12px;
-            padding-top: 12px;
+            gap: 15px;
+            margin-top: 10px;
+            padding-top: 10px;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
         }
 
@@ -299,6 +310,7 @@
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Fibra de Vidro" data-price="120">
             </div>
+            <img src="fibra de vidro1.jpeg" alt="Fibra de Vidro" class="service-thumb">
             <div class="service-info">
                 <div class="service-main">
                     <span class="service-name">Fibra de Vidro</span>
@@ -313,6 +325,7 @@
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Molde F1" data-price="120">
             </div>
+            <img src="molde f1.jpeg" alt="Molde F1" class="service-thumb">
             <div class="service-info">
                 <div class="service-main">
                     <span class="service-name">Molde F1</span>
@@ -327,6 +340,7 @@
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Molde Híbrido" data-price="120">
             </div>
+            <img src="x.jpeg" alt="Molde Híbrido" class="service-thumb">
             <div class="service-info">
                 <div class="service-main">
                     <span class="service-name">Molde Híbrido</span>
@@ -343,6 +357,7 @@
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Banho de Gel" data-price="80">
             </div>
+            <img src="banho de gel 2.jpeg" alt="Banho de Gel" class="service-thumb">
             <div class="service-info">
                 <div class="service-main">
                     <span class="service-name">Banho de Gel</span>
@@ -371,6 +386,7 @@
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Esmaltação em Gel (Unha Natural)" data-price="25">
             </div>
+            <img src="Esmaltação em gel na unha Natural1.jpeg" alt="Esmaltação em Gel na Unha Natural" class="service-thumb">
             <div class="service-info">
                 <div class="service-main">
                     <span class="service-name">Esmaltação em Gel (Natural)</span>
@@ -384,6 +400,7 @@
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Esmaltação em Gel (No Alongamento)" data-price="15">
             </div>
+            <img src="esmaltação em gel .jpeg" alt="Esmaltação em Gel" class="service-thumb">
             <div class="service-info">
                 <div class="service-main">
                     <span class="service-name">Esmaltação em Gel (No Alongamento)</span>
@@ -516,7 +533,8 @@
 
         function toggleCheckbox(card) {
             const checkbox = card.querySelector('.service-checkbox');
-            if (event.target !== checkbox) {
+            // Impede disparar duas vezes se clicar direto na checkbox ou na imagem
+            if (event.target !== checkbox && event.target.tagName !== 'IMG') {
                 checkbox.checked = !checkbox.checked;
             }
             calculateTotal();
@@ -546,7 +564,6 @@
             document.getElementById('ui-error-box').style.display = 'none';
         }
 
-        // Validação inteligente ao tirar o foco do campo (Desktop Seguro)
         function validateDayOfWeek() {
             clearUIError();
             const dateInput = document.getElementById('booking-date');
@@ -555,7 +572,7 @@
             if (!dateString) return true;
 
             const parts = dateString.split('-');
-            if (parts[0].length < 4) return true; // Evita validar ano incompleto enquanto digita
+            if (parts[0].length < 4) return true; 
 
             const chosenDate = new Date(parts[0], parts[1] - 1, parts[2]);
             const dayOfWeek = chosenDate.getDay();
