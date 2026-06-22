@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Espaço de Beleza — Tabela de Serviços</title>
+    <title>Espaço de Beleza — Agendamento</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #141414 0%, #221a1b 100%);
             --card-bg: rgba(255, 255, 255, 0.03);
             --card-border: rgba(255, 255, 255, 0.08);
-            --accent-color: #e5b3bc; /* Rosa quartzo sofisticado */
+            --accent-color: #e5b3bc;
             --text-main: #ffffff;
             --text-secondary: #c7c7c7;
             --text-muted: #8e8e8e;
@@ -40,16 +40,17 @@
         .wrapper {
             width: 100%;
             max-width: 600px;
+            padding-bottom: 120px; /* Espaço para a barra de preço fixada */
         }
 
         header {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         header h1 {
             font-family: 'Playfair Display', serif;
-            font-size: 2.5rem;
+            font-size: 2.3rem;
             font-weight: 400;
             letter-spacing: 3px;
             margin-bottom: 10px;
@@ -82,6 +83,7 @@
             margin-left: 15px;
         }
 
+        /* Formato de Seleção Inteligente */
         .service-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
@@ -90,13 +92,33 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
+            display: flex;
+            gap: 15px;
+            cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .service-card:hover {
-            transform: translateY(-2px);
             border-color: rgba(229, 179, 188, 0.3);
             background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Estilizando o Checkbox Customizado */
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .service-checkbox {
+            accent-color: var(--accent-color);
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .service-info {
+            flex: 1;
         }
 
         .service-main {
@@ -136,66 +158,114 @@
             color: var(--text-muted);
         }
 
-        .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
+        /* Formulário de Dados da Cliente */
+        .booking-form {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 40px;
         }
 
-        .sub-list {
-            margin-top: 8px;
-            padding-left: 15px;
-            list-style-type: none;
+        .booking-form h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-weight: 400;
+            font-size: 1.3rem;
         }
 
-        .sub-list li {
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
             font-size: 0.85rem;
             color: var(--text-secondary);
-            margin-bottom: 4px;
-            position: relative;
+            margin-bottom: 5px;
         }
 
-        .sub-list li::before {
-            content: "•";
-            color: var(--accent-color);
-            position: absolute;
-            left: -12px;
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
         }
 
-        footer {
-            text-align: center;
-            margin-top: 60px;
-            padding-top: 30px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-color);
         }
 
-        .footer-info {
-            font-size: 0.9rem;
+        /* Barra de Preço Fixa no Rodapé */
+        .total-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 20, 20, 0.95);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-top: 1px solid var(--card-border);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .total-content {
+            width: 100%;
+            max-width: 600px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-text {
+            font-size: 0.85rem;
             color: var(--text-secondary);
-            line-height: 1.8;
-            font-weight: 300;
+            text-transform: uppercase;
+        }
+
+        .total-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--accent-color);
+            font-weight: 600;
+            display: block;
         }
 
         .btn-schedule {
-            display: inline-block;
-            background: transparent;
-            color: var(--accent-color);
-            border: 1px solid var(--accent-color);
-            text-decoration: none;
-            padding: 14px 32px;
+            background: var(--accent-color);
+            color: #141414;
+            border: none;
+            padding: 12px 24px;
             border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            letter-spacing: 2px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1px;
             text-transform: uppercase;
-            margin-top: 25px;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
 
         .btn-schedule:hover {
-            background: var(--accent-color);
-            color: #141414;
-            box-shadow: 0 10px 20px rgba(229, 179, 188, 0.15);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(229, 179, 188, 0.3);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.6;
         }
     </style>
 </head>
@@ -204,120 +274,282 @@
     <div class="wrapper">
         <header>
             <h1>Menu de Serviços</h1>
-            <p>Experiência & Sofisticação</p>
+            <p>Selecione para Agendar</p>
         </header>
 
-        <div class="section-title">Alongamentos Especiais</div>
+        <div class="section-title">Alongamentos</div>
 
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Fibra de Vidro</span>
-                <span class="service-price">R$ 120</span>
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Fibra de Vidro" data-price="120">
             </div>
-            <p class="service-description">Extensão de alta durabilidade e resistência, utilizando filamentos de fibra para um resultado incrivelmente natural e sob medida.</p>
-            <div class="service-meta">
-                <div class="meta-item">⏱ ~2h30</div>
-                <div class="meta-item">🔄 Manutenção: 15-21 dias</div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Fibra de Vidro</span>
+                    <span class="service-price">R$ 120</span>
+                </div>
+                <p class="service-description">Extensão altamente resistente com filamentos de fibra para um visual natural.</p>
+                <div class="service-meta"><span>⏱ ~2h30</span><span>🔄 15-21 dias</span></div>
             </div>
         </div>
 
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Molde F1</span>
-                <span class="service-price">R$ 120</span>
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Molde F1" data-price="120">
             </div>
-            <p class="service-description">Técnica moderna que garante simetria perfeita e acabamento com brilho espelhado diretamente na aplicação.</p>
-            <div class="service-meta">
-                <div class="meta-item">⏱ ~2h00</div>
-                <div class="meta-item">🔄 Manutenção: 15-21 dias</div>
-            </div>
-        </div>
-
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Molde Híbrido</span>
-                <span class="service-price">R$ 120</span>
-            </div>
-            <p class="service-description">A união das melhores técnicas de estrutura e finalização para unhas impecáveis e personalizadas.</p>
-            <div class="service-meta">
-                <div class="meta-item">⏱ ~2h00</div>
-                <div class="meta-item">🔄 Manutenção: 15-21 dias</div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Molde F1</span>
+                    <span class="service-price">R$ 120</span>
+                </div>
+                <p class="service-description">Simetria perfeita e brilho espelhado diretamente na aplicação.</p>
+                <div class="service-meta"><span>⏱ ~2h00</span><span>🔄 15-21 dias</span></div>
             </div>
         </div>
 
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Molde Híbrido" data-price="120">
+            </div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Molde Híbrido</span>
+                    <span class="service-price">R$ 120</span>
+                </div>
+                <p class="service-description">União das melhores técnicas para unhas impecáveis.</p>
+                <div class="service-meta"><span>⏱ ~2h00</span><span>🔄 15-21 dias</span></div>
+            </div>
+        </div>
 
         <div class="section-title">Estrutura & Blindagem</div>
 
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Banho de Gel</span>
-                <span class="service-price">R$ 80</span>
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Banho de Gel" data-price="80">
             </div>
-            <p class="service-description">Uma barreira de gel sobre a sua unha natural, ideal para dar resistência, evitar quebras e manter o esmalte por muito mais tempo.</p>
-            <div class="service-meta">
-                <div class="meta-item">⏱ ~1h15</div>
-                <div class="meta-item">🔄 Manutenção: ~20 dias</div>
-            </div>
-        </div>
-
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Blindagem</span>
-                <span class="service-price">R$ 50</span>
-            </div>
-            <p class="service-description">Proteção extra para unhas naturais que descamam com facilidade, promovendo crescimento saudável.</p>
-            <div class="service-meta">
-                <div class="meta-item">⏱ ~1h00</div>
-                <div class="meta-item">🔄 Manutenção: ~20 dias</div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Banho de Gel</span>
+                    <span class="service-price">R$ 80</span>
+                </div>
+                <p class="service-description">Camada protetora para fortalecer e dar brilho duradouro às unhas naturais.</p>
+                <div class="service-meta"><span>⏱ ~1h15</span><span>🔄 ~20 dias</span></div>
             </div>
         </div>
 
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Esmaltação em Gel</span>
-                <span class="service-price">A partir de R$ 15</span>
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Blindagem" data-price="50">
             </div>
-            <p class="service-description">Secagem imediata em cabine LED. Unhas com brilho perfeito e sem descascar por até 15 dias.</p>
-            <ul class="sub-list">
-                <li>Em unhas naturais: R$ 25</li>
-                <li>Sobre o alongamento: R$ 15</li>
-            </ul>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Blindagem</span>
+                    <span class="service-price">R$ 50</span>
+                </div>
+                <p class="service-description">Proteção ideal para unhas que descamam com facilidade.</p>
+                <div class="service-meta"><span>⏱ ~1h00</span><span>🔄 ~20 dias</span></div>
+            </div>
         </div>
 
-
-        <div class="section-title">Serviços Clássicos & Detalhes</div>
-
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Manicure & Pedicure</span>
-                <span class="service-price">R$ 25 - R$ 45</span>
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Esmaltação em Gel (Unha Natural)" data-price="25">
             </div>
-            <p class="service-description">Cutilagem cuidadosa e esmaltação tradicional com biossegurança garantida.</p>
-            <ul class="sub-list">
-                <li>Manicure Simples: R$ 25</li>
-                <li>Pé (Pedicure): R$ 30</li>
-                <li>Pé e Mão combinados: R$ 45</li>
-            </ul>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Esmaltação em Gel (Natural)</span>
+                    <span class="service-price">R$ 25</span>
+                </div>
+                <p class="service-description">Secagem imediata. Unhas perfeitas por até 15 dias.</p>
+            </div>
         </div>
 
-        <div class="service-card">
-            <div class="service-main">
-                <span class="service-name">Acabamentos Artísticos</span>
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Esmaltação em Gel (No Alongamento)" data-price="15">
             </div>
-            <ul class="sub-list">
-                <li>Francesinha delicada: + R$ 2</li>
-                <li>Decorações e Nail Art: A partir de R$ 15</li>
-            </ul>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Esmaltação em Gel (No Alongamento)</span>
+                    <span class="service-price">R$ 15</span>
+                </div>
+                <p class="service-description">Aplicação da cor em gel sobre a estrutura já existente.</p>
+            </div>
+        </div>
+
+        <div class="section-title">Clássicos & Adicionais</div>
+
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Manicure Simples" data-price="25">
+            </div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Manicure Simples</span>
+                    <span class="service-price">R$ 25</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Pé (Pedicure)" data-price="30">
+            </div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Pé (Pedicure)</span>
+                    <span class="service-price">R$ 30</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Pé e Mão" data-price="45">
+            </div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Pé e Mão</span>
+                    <span class="service-price">R$ 45</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Adicional Francesinha" data-price="2">
+            </div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Adicional Francesinha</span>
+                    <span class="service-price">+ R$ 2</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="service-card" onclick="toggleCheckbox(this)">
+            <div class="checkbox-container">
+                <input type="checkbox" class="service-checkbox" data-name="Adicional Decoração" data-price="15">
+            </div>
+            <div class="service-info">
+                <div class="service-main">
+                    <span class="service-name">Adicional Decoração</span>
+                    <span class="service-price">+ R$ 15</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-form">
+            <h3>Seus Dados</h3>
+            <div class="form-group">
+                <label for="client-name">Seu Nome Completo:</label>
+                <input type="text" id="client-name" placeholder="Ex: Maria Silva">
+            </div>
+            <div class="form-group">
+                <label for="booking-date">Data Desejada:</label>
+                <input type="date" id="booking-date">
+            </div>
+            <div class="form-group">
+                <label for="booking-time">Horário Desejado:</label>
+                <input type="time" id="booking-time">
+            </div>
         </div>
 
         <footer>
-            <div class="footer-info">
-                <p>📍 Rua Professor Souza Pinto, 172</p>
-                <p>📞 (21) 98029-9834</p>
-            </div>
-            <a href="https://wa.me/5521980299834" class="btn-schedule" target="_blank">Solicitar Agendamento</a>
+            <p>📍 Rua Professor Souza Pinto, 172</p>
+            <p>📞 (21) 98029-9834</p>
         </footer>
     </div>
 
+    <div class="total-bar">
+        <div class="total-content">
+            <div>
+                <span class="total-text">Total Selecionado:</span>
+                <span class="total-price" id="display-total">R$ 0,00</span>
+            </div>
+            <button class="btn-schedule" onclick="sendWhatsApp()">Agendar Horário</button>
+        </div>
+    </div>
+
+    <script>
+        // Faz o card inteiro ser clicável para selecionar o serviço
+        function toggleCheckbox(card) {
+            const checkbox = card.querySelector('.service-checkbox');
+            // Evita disparar duas vezes se clicar direto no checkbox
+            if (event.target !== checkbox) {
+                checkbox.checked = !checkbox.checked;
+            }
+            calculateTotal();
+        }
+
+        // Calcula o preço dinamicamente
+        function calculateTotal() {
+            const checkboxes = document.querySelectorAll('.service-checkbox');
+            let total = 0;
+            
+            checkboxes.forEach(box => {
+                if (box.checked) {
+                    total += parseFloat(box.getAttribute('data-price'));
+                }
+            });
+
+            document.getElementById('display-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
+        }
+
+        // Constrói a mensagem profissional e redireciona para o WhatsApp
+        function sendWhatsApp() {
+            const name = document.getElementById('client-name').value.trim();
+            const date = document.getElementById('booking-date').value;
+            const time = document.getElementById('booking-time').value;
+            
+            if (!name) {
+                alert("Por favor, preencha o seu nome para continuar.");
+                return;
+            }
+
+            // Capturar serviços selecionados
+            const checkboxes = document.querySelectorAll('.service-checkbox');
+            let selectedServices = [];
+            let total = 0;
+
+            checkboxes.forEach(box => {
+                if (box.checked) {
+                    selectedServices.push(`• ${box.getAttribute('data-name')} (R$ ${box.getAttribute('data-price')})`);
+                    total += parseFloat(box.getAttribute('data-price'));
+                }
+            });
+
+            if (selectedServices.length === 0) {
+                alert("Por favor, selecione pelo menos um serviço.");
+                return;
+            }
+
+            // Formatação da data para o padrão brasileiro (DD/MM/AAAA)
+            let formattedDate = "A definir";
+            if(date) {
+                const parts = date.split('-');
+                formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+            
+            const formattedTime = time ? time : "A definir";
+
+            // Montagem do texto do WhatsApp
+            let text = `Olá! Gostaria de solicitar um agendamento:\n\n`;
+            text += `👤 *Nome:* ${name}\n`;
+            text += `📅 *Data:* ${formattedDate}\n`;
+            text += `⏰ *Horário:* ${formattedTime}\n\n`;
+            text += `💅 *Serviços Selecionados:*\n${selectedServices.join('\n')}\n\n`;
+            text += `💰 *Valor Total Estimado:* R$ ${total.toFixed(2).replace('.', ',')}`;
+
+            // Codifica o texto para URL
+            const encodedText = encodeURIComponent(text);
+            
+            // Número de telefone do anúncio (substitua os números se necessário)
+            const phoneNumber = "5521980299834"; 
+            
+            // Abre o WhatsApp
+            window.open(`https://wa.me/${phoneNumber}?text=${encodedText}`, '_blank');
+        }
+    </script>
 </body>
 </html>
