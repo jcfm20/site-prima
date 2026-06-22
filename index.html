@@ -184,7 +184,7 @@
             margin-bottom: 5px;
         }
 
-        .form-group input {
+        .form-group input, .form-group select {
             width: 100%;
             padding: 12px;
             background: rgba(255, 255, 255, 0.05);
@@ -194,12 +194,16 @@
             font-family: 'Montserrat', sans-serif;
         }
 
-        .form-group input:focus {
+        .form-group select option {
+            background: #221a1b;
+            color: white;
+        }
+
+        .form-group input:focus, .form-group select:focus {
             outline: none;
             border-color: var(--accent-color);
         }
 
-        /* Mensagem de Erro na Tela */
         .error-message {
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid var(--error-color);
@@ -458,12 +462,29 @@
                 <input type="text" id="client-name" placeholder="Ex: Maria Silva">
             </div>
             <div class="form-group">
-                <label for="booking-date">Data Desejada:</label>
-                <input type="date" id="booking-date">
+                <label for="booking-date">Data Desejada (Terça a Sábado):</label>
+                <input type="date" id="booking-date" onchange="validateDayOfWeek()">
             </div>
             <div class="form-group">
-                <label for="booking-time">Horário Desejado:</label>
-                <input type="time" id="booking-time">
+                <label for="booking-time">Horário Desejado (Das 06:00 às 13:00):</label>
+                <select id="booking-time">
+                    <option value="">Selecione um horário...</option>
+                    <option value="06:00">06:00</option>
+                    <option value="06:30">06:30</option>
+                    <option value="07:00">07:00</option>
+                    <option value="07:30">07:30</option>
+                    <option value="08:00">08:00</option>
+                    <option value="08:30">08:30</option>
+                    <option value="09:00">09:00</option>
+                    <option value="09:30">09:30</option>
+                    <option value="10:00">10:00</option>
+                    <option value="10:30">10:30</option>
+                    <option value="11:00">11:00</option>
+                    <option value="11:30">11:30</option>
+                    <option value="12:00">12:00</option>
+                    <option value="12:30">12:30</option>
+                    <option value="13:00">13:00</option>
+                </select>
             </div>
 
             <div class="error-message" id="ui-error-box"></div>
@@ -486,7 +507,7 @@
     </div>
 
     <script>
-        // Bloqueia a seleção visual de datas passadas no calendário
+        // Bloqueia a seleção visual de datas passadas no calendário nativo
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('booking-date').setAttribute('min', today);
@@ -513,33 +534,6 @@
             document.getElementById('display-total').innerText = `R$ ${total.toFixed(2).replace('.', ',')}`;
         }
 
-        // Validação profunda lógica de calendário real
-        function checkDateValidity(dateString) {
-            if (!dateString) return "empty";
-            
-            const parts = dateString.split('-');
-            const year = parseInt(parts[0], 10);
-            const month = parseInt(parts[1], 10);
-            const day = parseInt(parts[2], 10);
-
-            // Validação de data no passado
-            const inputDate = new Date(year, month - 1, day);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            if (inputDate < today) {
-                return "data invalida";
-            }
-
-            // Quantidade real de dias por mês (bissexto incluso)
-            const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
-            const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-
-            if (day < 1 || day > daysInMonths[month - 1]) {
-                return "data invalida";
-            }
-            return "valid";
-        }
-
         function displayUIError(msg) {
             const errorBox = document.getElementById('ui-error-box');
             errorBox.innerText = msg;
@@ -551,6 +545,60 @@
             document.getElementById('ui-error-box').style.display = 'none';
         }
 
+        // Validação imediata ao escolher o dia no calendário
+        function validateDayOfWeek() {
+            clearUIError();
+            const dateInput = document.getElementById('booking-date');
+            const dateString = dateInput.value;
+            
+            if (!dateString) return true;
+
+            // Criar a data considerando o fuso horário local
+            const parts = dateString.split('-');
+            const chosenDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            const dayOfWeek = chosenDate.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+
+            // Bloquear Domingo (0) e Segunda (1)
+            if (dayOfWeek === 0 || dayOfWeek === 1) {
+                displayUIError("Nosso espaço funciona apenas de Terça a Sábado.");
+                dateInput.value = ""; // Limpa a data inválida
+                return false;
+            }
+            return true;
+        }
+
+        // Validação lógica profunda de calendário real
+        function checkDateValidity(dateString) {
+            if (!dateString) return "empty";
+            
+            const parts = dateString.split('-');
+            const year = parseInt(parts[0], 10);
+            const month = parseInt(parts[1], 10);
+            const day = parseInt(parts[2], 10);
+
+            const inputDate = new Date(year, month - 1, day);
+            const today = new Date();
+            today.setHours(0,0,0,0);
+            if (inputDate < today) {
+                return "data invalida";
+            }
+
+            const isLeap = (year % 4 === 0 && year % 100 !== 0) || (year % 400 === 0);
+            const daysInMonths = [31, isLeap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+            if (day < 1 || day > daysInMonths[month - 1]) {
+                return "data invalida";
+            }
+
+            // Validação final do dia da semana
+            const dayOfWeek = inputDate.getDay();
+            if (dayOfWeek === 0 || dayOfWeek === 1) {
+                return "fechado";
+            }
+
+            return "valid";
+        }
+
         function sendWhatsApp() {
             clearUIError();
 
@@ -558,13 +606,11 @@
             const date = document.getElementById('booking-date').value;
             const time = document.getElementById('booking-time').value;
             
-            // 1. Verificação de Nome Vazio
             if (!name) {
                 displayUIError("Por favor, preencha o seu nome completo.");
                 return;
             }
 
-            // 2. Verificação Exclusiva da Data
             const dateCheck = checkDateValidity(date);
             if (dateCheck === "empty") {
                 displayUIError("Por favor, selecione uma data.");
@@ -572,15 +618,16 @@
             } else if (dateCheck === "data invalida") {
                 displayUIError("data invalida");
                 return;
+            } else if (dateCheck === "fechado") {
+                displayUIError("Nosso espaço funciona apenas de Terça a Sábado.");
+                return;
             }
 
-            // 3. Verificação de Horário Vazio
             if (!time) {
                 displayUIError("Por favor, escolha o horário desejado.");
                 return;
             }
 
-            // 4. Verificação de Serviços Selecionados
             const checkboxes = document.querySelectorAll('.service-checkbox');
             let selectedServices = [];
             let total = 0;
@@ -597,7 +644,6 @@
                 return;
             }
 
-            // Formatação final e redirecionamento para o WhatsApp
             const parts = date.split('-');
             const formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
 
