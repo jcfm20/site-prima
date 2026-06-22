@@ -393,7 +393,7 @@
             </div>
         </div>
 
-        <div class="section-title">Clássicos & Adicionais</div>
+        <div class="section-title">Clássicos</div>
 
         <div class="service-card" onclick="toggleCheckbox(this)">
             <div class="checkbox-container">
@@ -431,6 +431,8 @@
             </div>
         </div>
 
+        <div class="section-title">Adicionais</div>
+
         <div class="service-card" onclick="toggleCheckbox(this)">
             <div class="checkbox-container">
                 <input type="checkbox" class="service-checkbox" data-name="Adicional Francesinha" data-price="2">
@@ -463,7 +465,7 @@
             </div>
             <div class="form-group">
                 <label for="booking-date">Data Desejada (Terça a Sábado):</label>
-                <input type="date" id="booking-date" onchange="validateDayOfWeek()">
+                <input type="date" id="booking-date" onblur="validateDayOfWeek()">
             </div>
             <div class="form-group">
                 <label for="booking-time">Horário Desejado (Das 06:00 às 13:00):</label>
@@ -507,7 +509,6 @@
     </div>
 
     <script>
-        // Bloqueia a seleção visual de datas passadas no calendário nativo
         window.onload = function() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('booking-date').setAttribute('min', today);
@@ -545,7 +546,7 @@
             document.getElementById('ui-error-box').style.display = 'none';
         }
 
-        // Validação imediata ao escolher o dia no calendário
+        // Validação inteligente ao tirar o foco do campo (Desktop Seguro)
         function validateDayOfWeek() {
             clearUIError();
             const dateInput = document.getElementById('booking-date');
@@ -553,21 +554,20 @@
             
             if (!dateString) return true;
 
-            // Criar a data considerando o fuso horário local
             const parts = dateString.split('-');
-            const chosenDate = new Date(parts[0], parts[1] - 1, parts[2]);
-            const dayOfWeek = chosenDate.getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+            if (parts[0].length < 4) return true; // Evita validar ano incompleto enquanto digita
 
-            // Bloquear Domingo (0) e Segunda (1)
+            const chosenDate = new Date(parts[0], parts[1] - 1, parts[2]);
+            const dayOfWeek = chosenDate.getDay();
+
             if (dayOfWeek === 0 || dayOfWeek === 1) {
                 displayUIError("Nosso espaço funciona apenas de Terça a Sábado.");
-                dateInput.value = ""; // Limpa a data inválida
+                dateInput.value = "";
                 return false;
             }
             return true;
         }
 
-        // Validação lógica profunda de calendário real
         function checkDateValidity(dateString) {
             if (!dateString) return "empty";
             
@@ -575,6 +575,10 @@
             const year = parseInt(parts[0], 10);
             const month = parseInt(parts[1], 10);
             const day = parseInt(parts[2], 10);
+
+            if (isNaN(year) || isNaN(month) || isNaN(day) || parts[0].length < 4) {
+                return "data invalida";
+            }
 
             const inputDate = new Date(year, month - 1, day);
             const today = new Date();
@@ -590,7 +594,6 @@
                 return "data invalida";
             }
 
-            // Validação final do dia da semana
             const dayOfWeek = inputDate.getDay();
             if (dayOfWeek === 0 || dayOfWeek === 1) {
                 return "fechado";
